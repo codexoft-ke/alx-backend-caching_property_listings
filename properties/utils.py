@@ -79,8 +79,9 @@ def get_redis_cache_metrics():
         
         # Calculate total operations and hit ratio
         total_operations = keyspace_hits + keyspace_misses
-        hit_ratio = (keyspace_hits / total_operations * 100) if total_operations > 0 else 0
-        miss_ratio = (keyspace_misses / total_operations * 100) if total_operations > 0 else 0
+        total_requests = total_operations  # Alias for clarity
+        hit_ratio = (keyspace_hits / total_requests * 100) if total_requests > 0 else 0
+        miss_ratio = (keyspace_misses / total_requests * 100) if total_requests > 0 else 0
         
         # Get additional useful metrics
         used_memory = info.get('used_memory', 0)

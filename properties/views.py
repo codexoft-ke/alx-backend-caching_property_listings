@@ -74,3 +74,37 @@ def cache_status(request):
         'database_count': db_count,
         'cache_db_sync': status['cached_count'] == db_count if status['is_cached'] else False,
     })
+
+
+def cache_metrics(request):
+    """
+    View to display Redis cache metrics including hit/miss ratios.
+    """
+    metrics = get_redis_cache_metrics()
+    cache_status = get_cache_status()
+    
+    return JsonResponse({
+        'redis_metrics': metrics,
+        'application_cache_status': cache_status,
+        'timestamp': '2025-08-31T10:00:00Z',  # You might want to add actual timestamp
+        'recommendations': {
+            'efficiency': metrics.get('cache_efficiency', 'Unknown'),
+            'suggestion': get_cache_recommendation(metrics.get('hit_ratio_percentage', 0))
+        }
+    })
+
+
+def get_cache_recommendation(hit_ratio):
+    """
+    Get cache optimization recommendations based on hit ratio.
+    """
+    if hit_ratio >= 90:
+        return "Excellent cache performance! Your cache is working optimally."
+    elif hit_ratio >= 80:
+        return "Good cache performance. Consider monitoring for consistency."
+    elif hit_ratio >= 60:
+        return "Fair cache performance. Consider increasing cache TTL or reviewing cache keys."
+    elif hit_ratio >= 40:
+        return "Poor cache performance. Review caching strategy and cache invalidation logic."
+    else:
+        return "Very poor cache performance. Consider redesigning your caching approach."
