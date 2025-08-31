@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.cache import cache_page
 from django.core import serializers
 from .models import Property
-from .utils import get_all_properties
+from .utils import get_all_properties, get_cache_status
 
 
 @cache_page(60 * 15)  # Cache for 15 minutes
