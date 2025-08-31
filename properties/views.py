@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.cache import cache_page
 from django.core import serializers
 from .models import Property
-from .utils import get_all_properties, get_cache_status
+from .utils import get_all_properties, get_cache_status, get_redis_cache_metrics
 
 
 @cache_page(60 * 15)  # Cache for 15 minutes
@@ -59,4 +59,18 @@ def property_list_no_page_cache(request):
         'count': len(properties_data),
         'queryset_cached': True,  # Indicator that queryset is cached
         'page_cached': False,     # No page-level caching
+    })
+
+
+def cache_status(request):
+    """
+    View to display the current cache status for properties.
+    """
+    status = get_cache_status()
+    db_count = Property.objects.count()
+    
+    return JsonResponse({
+        'cache_status': status,
+        'database_count': db_count,
+        'cache_db_sync': status['cached_count'] == db_count if status['is_cached'] else False,
     })
